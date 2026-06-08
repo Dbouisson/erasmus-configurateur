@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erasmus+ Configurateur — Séjour Linguistique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:#1a6b47;--green-light:#e8f5ee;--green-mid:#4caf82;--green-dark:#0e3d28;
+  --blue:#185FA5;--blue-light:#e6f1fb;
+  --amber:#ba7517;--amber-light:#faeeda;
+  --red:#a32d2d;--red-light:#fcebeb;
+  --gray:#5f5e5a;--gray-light:#f5f4f0;--gray-border:#e0deda;
+  --white:#ffffff;--text:#1a1a18;--text-muted:#6b6b68;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Sora',sans-serif;background:#f5f4f0;color:var(--text);line-height:1.6}
+
+/* ── APP SHELL ── */
+#app{min-height:100vh;display:flex;flex-direction:column}
+.page{display:none;flex-direction:column;min-height:100vh;animation:fadeIn .35s ease}
+.page.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── NAV ── */
+nav{background:var(--white);border-bottom:1px solid var(--gray-border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-icon{width:32px;height:32px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px}
+.nav-logo-text{font-size:14px;font-weight:600;color:var(--green-dark)}
+.nav-logo-sub{font-size:11px;color:var(--text-muted);font-weight:400}
+.nav-steps{display:flex;align-items:center;gap:4px}
+.nav-step{width:28px;height:28px;border-radius:50%;border:2px solid var(--gray-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.nav-step.done{background:var(--green);border-color:var(--green);color:white}
+.nav-step.active{border-color:var(--green);color:var(--green)}
+.nav-step-line{width:20px;height:2px;background:var(--gray-border)}
+.nav-step-line.done{background:var(--green)}
+.nav-update{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--gray-border)}
+.status-dot.ok{background:var(--green-mid)}
+.status-dot.loading{background:var(--amber);animation:blink 1s infinite}
+.status-dot.error{background:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── PAGE 0 : ACCUEIL ── */
+.hero{background:var(--green-dark);color:white;padding:64px 24px 48px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(76,175,130,0.25) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(26,107,71,0.4) 0%,transparent 50%)}
+.hero-content{position:relative;z-index:1;max-width:640px;margin:0 auto}
+.hero-eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green-mid);margin-bottom:16px}
+.hero-title{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,52px);line-height:1.15;margin-bottom:20px;color:white}
+.hero-title em{font-style:italic;color:#9fe1cb}
+.hero-desc{font-size:15px;color:rgba(255,255,255,0.75);max-width:480px;margin:0 auto 32px;line-height:1.7}
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:40px}
+.hero-badge{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,0.85)}
+.btn-start{background:var(--green-mid);color:white;border:none;padding:14px 36px;border-radius:30px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-start:hover{background:#3da872;transform:translateY(-2px);box-shadow:0 8px 24px rgba(76,175,130,0.4)}
+
+.features{padding:40px 24px;max-width:860px;margin:0 auto;width:100%}
+.features-title{font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:20px;text-align:center}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.feature-card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:20px;transition:box-shadow .2s}
+.feature-card:hover{box-shadow:var(--shadow)}
+.feature-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.feature-icon.green{background:var(--green-light)}
+.feature-icon.blue{background:var(--blue-light)}
+.feature-icon.amber{background:var(--amber-light)}
+.feature-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.feature-desc{font-size:12px;color:var(--text-muted);line-height:1.5}
+
+.update-banner{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:14px 20px;max-width:860px;margin:0 auto 32px;width:calc(100% - 48px);display:flex;align-items:center;gap:12px;font-size:13px}
+.update-banner.loading{border-color:var(--amber);background:var(--amber-light)}
+.update-banner.ok{border-color:var(--green-mid);background:var(--green-light)}
+.update-banner.error{border-color:var(--red);background:var(--red-light)}
+.update-icon{font-size:20px;flex-shrink:0}
+
+.credits{text-align:center;padding:24px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--gray-border);background:var(--white)}
+.credits strong{color:var(--green)}
+
+/* ── PAGES ÉTAPES ── */
+.step-header{background:var(--white);border-bottom:1px solid var(--gray-border);padding:20px 24px}
+.step-num{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.step-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--text)}
+.step-desc{font-size:13px;color:var(--text-muted);margin-top:4px}
+
+.step-body{flex:1;padding:24px;max-width:900px;margin:0 auto;width:100%}
+
+/* Grilles d'options */
+.options-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:24px}
+.opt-card{background:var(--white);border:1.5px solid var(--gray-border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:8px;position:relative}
+.opt-card:hover{border-color:var(--green-mid);background:#fafff9}
+.opt-card.sel{border-color:var(--green);background:var(--green-light)}
+.opt-card.sel .opt-name{color:var(--green-dark)}
+.opt-card.sel .opt-price{color:var(--green)}
+.opt-card.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.opt-card-top{display:flex;justify-content:space-between;align-items:flex-start}
+.opt-name{font-size:14px;font-weight:600;color:var(--text)}
+.opt-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;flex-shrink:0;margin-left:8px}
+.tag-g1{background:var(--blue-light);color:var(--blue)}
+.tag-g2{background:var(--green-light);color:var(--green)}
+.tag-lock{background:#f1f0eb;color:var(--gray)}
+.tag-soon{background:var(--amber-light);color:var(--amber)}
+.opt-sub{font-size:11px;color:var(--text-muted);line-height:1.45}
+.opt-price{font-size:18px;font-weight:700;color:var(--green-dark)}
+.opt-price-note{font-size:10px;color:var(--text-muted);margin-top:-4px}
+.opt-erasmus{font-size:11px;color:var(--green);font-weight:500}
+.opt-check{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;background:var(--green);display:none;align-items:center;justify-content:center;color:white;font-size:11px}
+.opt-card.sel .opt-check{display:flex}
+
+/* Slider */
+.slider-wrap{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.slider-label{font-size:14px;font-weight:500}
+.slider-val{font-size:22px;font-weight:700;color:var(--green)}
+.slider-unit{font-size:13px;font-weight:400;color:var(--text-muted)}
+input[type=range]{width:100%;accent-color:var(--green);height:6px;cursor:pointer}
+.slider-hint{font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic}
+
+/* Toggles */
+.toggle-list{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--gray-border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info .tl{font-size:13px;font-weight:500}
+.toggle-info .ts{font-size:11px;color:var(--text-muted)}
+.tog{position:relative;width:40px;height:22px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-track{position:absolute;inset:0;background:#d0ceca;border-radius:11px;cursor:pointer;transition:background .15s}
+.tog input:checked+.tog-track{background:var(--green)}
+.tog-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:transform .15s;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.tog input:checked~.tog-thumb{transform:translateX(18px)}
+
+/* ── PAGE RÉCAP ── */
+.recap-layout{display:grid;grid-template-columns:1fr 300px;gap:20px}
+@media(max-width:700px){.recap-layout{grid-template-columns:1fr}}
+.recap-lines{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);overflow:hidden}
+.recap-line{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--gray-border)}
+.recap-line:last-child{border-bottom:none}
+.recap-line-label{font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:8px}
+.recap-line-val{font-size:14px;font-weight:600;color:var(--text)}
+.recap-line.total{background:var(--gray-light)}
+.recap-line.total .recap-line-label{font-size:15px;font-weight:600;color:var(--text)}
+.recap-line.total .recap-line-val{font-size:20px;font-weight:700;color:var(--green-dark)}
+
+.sidebar-card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:20px;position:sticky;top:80px}
+.sidebar-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:16px}
+.erasmus-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.e-row{display:flex;justify-content:space-between;font-size:13px;color:var(--text-muted)}
+.e-row.bold{font-weight:600;color:var(--text);border-top:1px solid var(--gray-border);padding-top:8px;margin-top:4px}
+.e-green{color:var(--green);font-weight:600}
+.e-red{color:var(--red);font-weight:600}
+
+.budget-bar-wrap{margin-bottom:16px}
+.budget-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-bottom:4px}
+.budget-bar-bg{height:10px;background:var(--gray-border);border-radius:5px;overflow:hidden}
+.budget-bar-fill{height:10px;border-radius:5px;transition:width .4s,background .3s}
+
+.verdict-badge{border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin-bottom:16px}
+.verdict-ok{background:var(--green-light);color:var(--green-dark);border:1px solid #a5d6b8}
+.verdict-warn{background:var(--amber-light);color:var(--amber);border:1px solid #f0c070}
+.verdict-over{background:var(--red-light);color:var(--red);border:1px solid #f0a0a0}
+.verdict-icon{font-size:16px;margin-right:6px}
+
+.conseil-box{background:var(--gray-light);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--text-muted);line-height:1.55;border-left:3px solid var(--green-mid);margin-bottom:16px}
+
+/* ── PAGE DATES ── */
+.date-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:500px){.date-grid{grid-template-columns:1fr}}
+.date-card{background:var(--white);border:1.5px solid var(--gray-border);border-radius:var(--radius);padding:20px}
+.date-card label{font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px}
+.date-card input[type=date]{width:100%;font-family:'Sora',sans-serif;font-size:16px;font-weight:600;color:var(--green-dark);border:none;outline:none;background:transparent;cursor:pointer}
+.date-card input[type=date]:focus{outline:none}
+.date-card .date-computed{font-size:12px;color:var(--text-muted);margin-top:8px}
+.vacanc-info{background:var(--green-light);border:1px solid #a5d6b8;border-radius:var(--radius-sm);padding:14px 18px;font-size:13px;color:var(--green-dark);margin-bottom:16px}
+.vacanc-info strong{display:block;margin-bottom:4px}
+.dates-recap{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:16px 20px;display:flex;flex-wrap:wrap;gap:20px;margin-bottom:20px}
+.dates-recap-item{display:flex;flex-direction:column;gap:3px}
+.dates-recap-item .dri-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+.dates-recap-item .dri-val{font-size:16px;font-weight:700;color:var(--green-dark)}
+.dates-recap-item .dri-sub{font-size:11px;color:var(--text-muted)}
+.day-badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;margin-left:6px}
+.day-ok{background:var(--green-light);color:var(--green)}
+.day-warn{background:var(--amber-light);color:var(--amber)}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{background:var(--white);border-top:1px solid var(--gray-border);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;bottom:0}
+.btn{padding:10px 24px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;border:1.5px solid;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-prev{background:white;border-color:var(--gray-border);color:var(--text-muted)}
+.btn-prev:hover{border-color:var(--gray);color:var(--text)}
+.btn-next{background:var(--green);border-color:var(--green);color:white}
+.btn-next:hover{background:var(--green-dark);border-color:var(--green-dark)}
+.bottom-summary{font-size:13px;color:var(--text-muted)}
+.bottom-summary strong{color:var(--green-dark);font-size:15px}
+
+/* ── UPDATE LOADER ── */
+#update-overlay{position:fixed;inset:0;background:rgba(14,61,40,0.85);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;gap:20px}
+.loader-ring{width:48px;height:48px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(--green-mid);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:15px;font-weight:500;color:rgba(255,255,255,0.9)}
+.loader-sub{font-size:12px;color:rgba(255,255,255,0.5)}
+
+@media(max-width:600px){
+  .hero{padding:40px 20px 32px}
+  .step-body{padding:16px}
+  .options-grid{grid-template-columns:1fr}
+  .bottom-bar{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<div id="update-overlay">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Mise à jour des données en cours…</div>
+  <div class="loader-sub" id="loader-status">Interrogation de l'API Erasmus+…</div>
+</div>
+
+<div id="app">
+
+<!-- ───────────────── PAGE 0 : ACCUEIL ───────────────── -->
+<div class="page active" id="page-0">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div>
+        <div class="nav-logo-text">Erasmus+ Configurateur</div>
+        <div class="nav-logo-sub">Séjour linguistique enseignants</div>
+      </div>
+    </div>
+    <div class="nav-update">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Vérification…</span>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Mobilité Erasmus+ KA121-EFP</div>
+      <h1 class="hero-title">Planifiez votre séjour<br>de <em>perfectionnement linguistique</em></h1>
+      <p class="hero-desc">Cet outil vous guide étape par étape pour configurer et estimer le coût réel de votre mobilité Erasmus+, avec le calcul automatique de la subvention officielle KA121-EFP 2025.</p>
+      <div class="hero-badges">
+        <span class="hero-badge">🇮🇪 Irlande</span>
+        <span class="hero-badge">🇲🇹 Malte</span>
+        <span class="hero-badge">🇨🇾 Chypre</span>
+        <span class="hero-badge">+ destinations 2027</span>
+        <span class="hero-badge">Barème officiel 2025</span>
+        <span class="hero-badge">Prix actualisés</span>
+      </div>
+      <button class="btn-start" onclick="goTo(1)">
+        Commencer la configuration
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="update-banner-wrap" style="padding:20px 24px 0;max-width:860px;margin:0 auto;width:100%">
+    <div class="update-banner loading" id="update-banner">
+      <span class="update-icon">⟳</span>
+      <span id="update-banner-text">Actualisation des destinations et des tarifs en cours…</span>
+    </div>
+  </div>
+
+  <div class="features" style="padding-top:20px">
+    <div class="features-title">Ce que fait cet outil</div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon green">🌍</div>
+        <div class="feature-title">Destinations actualisées</div>
+        <div class="feature-desc">Au chaque ouverture, l'application vérifie les nouvelles destinations disponibles et actualise les prix via l'IA.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon blue">📐</div>
+        <div class="feature-title">Barème officiel KA121-EFP</div>
+        <div class="feature-desc">Calcul exact de la subvention Erasmus+ : frais de voyage + indemnité journalière par groupe pays + forfait organisation.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon amber">💶</div>
+        <div class="feature-title">Prix dynamiques par destination</div>
+        <div class="feature-desc">Chaque destination a ses propres tarifs de vol, de cours, d'hébergement et de repas. Tout se recalcule en temps réel.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon green">✅</div>
+        <div class="feature-title">Reste à charge instantané</div>
+        <div class="feature-desc">Visualisez immédiatement si votre configuration est couverte par la subvention Erasmus+ ou non.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:0 24px 32px;max-width:860px;margin:0 auto;width:100%">
+    <div style="background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:16px 20px;font-size:13px;color:var(--text-muted);line-height:1.6">
+      <strong style="color:var(--text)">Comment ça marche ?</strong> L'application suit 6 étapes : destination → vol → cours → hébergement → durée & repas → récapitulatif. À chaque étape, les prix des options s'affichent pour la destination choisie. Le récapitulatif final calcule automatiquement la subvention Erasmus+ selon le barème officiel KA121-EFP 2025.
+    </div>
+  </div>
+
+  <div class="credits">
+    Créé par <strong>David Bouisson</strong> — Professeur de Lycée Professionnel Électrotechnique, Lycée Charles Péguy, Eysines<br>
+    <span style="font-size:11px">Développé avec l'assistance de <strong>Claude AI</strong> (Anthropic) · Données Erasmus+ : Agence Erasmus+ France / barème KA121-EFP 2025</span>
+  </div>
+</div>
+
+<!-- ───────────────── PAGE 1 : DATES ───────────────── -->
+<div class="page" id="page-1">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">📅</div>
+      <div><div class="nav-logo-text">Erasmus+ Configurateur</div></div>
+    </div>
+    <div class="nav-steps" id="nav-steps-1"></div>
+  </nav>
+  <div class="step-header">
+    <div class="step-num">Étape 1 sur 7</div>
+    <div class="step-title">Dates de votre séjour</div>
+    <div class="step-desc">Choisissez vos dates de départ et de retour. Les cours commencent le lundi, arrivée conseillée le dimanche soir.</div>
+  </div>
+  <div class="step-body">
+
+    <div class="vacanc-info">
+      <strong>📅 Périodes de vacances scolaires recommandées (Académie de Bordeaux)</strong>
+      Toussaint 2026 : 17 oct. → 2 nov. · Hiver 2027 : 13 fév. → 1 mars · Printemps 2027 : 17 avr. → 4 mai
+    </div>
+
+    <div class="date-grid">
+      <div class="date-card">
+        <label>Date de départ (dimanche)</label>
+        <input type="date" id="date-depart" value="2026-10-18" onchange="onDateChange()">
+        <div class="date-computed" id="depart-day-label">Dimanche 18 octobre 2026</div>
+      </div>
+      <div class="date-card">
+        <label>Date de retour (dimanche)</label>
+        <input type="date" id="date-retour" value="2026-10-25" onchange="onDateChange()">
+        <div class="date-computed" id="retour-day-label">Dimanche 25 octobre 2026</div>
+      </div>
+    </div>
+
+    <div class="dates-recap" id="dates-recap">
+      <div class="dates-recap-item">
+        <span class="dri-label">Durée totale</span>
+        <span class="dri-val" id="dr-duree">7 nuits</span>
+        <span class="dri-sub" id="dr-duree-sub">8 jours</span>
+      </div>
+      <div class="dates-recap-item">
+        <span class="dri-label">1er cours</span>
+        <span class="dri-val" id="dr-premier-cours">Lundi 19 oct.</span>
+        <span class="dri-sub">Jour d'arrivée + 1</span>
+      </div>
+      <div class="dates-recap-item">
+        <span class="dri-label">Dernier cours</span>
+        <span class="dri-val" id="dr-dernier-cours">Vendredi 23 oct.</span>
+        <span class="dri-sub" id="dr-jours-cours">5 jours de cours</span>
+      </div>
+      <div class="dates-recap-item">
+        <span class="dri-label">Jours financés Erasmus+</span>
+        <span class="dri-val" id="dr-erasmus-jours">9 jours</span>
+        <span class="dri-sub">séjour + 1j voyage chaque côté</span>
+      </div>
+    </div>
+
+    <div id="date-warning" style="display:none;background:var(--amber-light);border:1px solid #f0c070;border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--amber);margin-bottom:16px"></div>
+
+    <div style="background:var(--blue-light);border:1px solid #b5d4f4;border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--blue)">
+      <strong>💡 Conseil :</strong> Partez le dimanche soir pour être reposé le lundi matin au premier cours. Prévoyez une nuit d'hébergement supplémentaire si votre vol retour est le dimanche. Les cours ont généralement lieu du lundi au vendredi, soit 5 jours pleins.
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-prev" onclick="goTo(0)">← Accueil</button>
+    <div class="bottom-summary" id="bs-1">—</div>
+    <button class="btn btn-next" onclick="goTo(2)">Destination →</button>
+  </div>
+</div>
+
+<!-- ───────────────── PAGE 2 : DESTINATION ───────────────── -->
+<div class="page" id="page-2">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div><div class="nav-logo-text">Erasmus+ Configurateur</div></div>
+    </div>
+    <div class="nav-steps" id="nav-steps-2"></div>
+  </nav>
+  <div class="step-header">
+    <div class="step-num">Étape 2 sur 7</div>
+    <div class="step-title">Choisissez votre destination</div>
+    <div class="step-desc" id="dest-step-desc">Toutes les destinations sont accessibles depuis Bordeaux-Mérignac et éligibles Erasmus+ en 2026.</div>
+  </div>
+  <div class="step-body">
+    <div class="options-grid" id="dest-grid"></div>
+    <div style="background:var(--amber-light);border:1px solid #f0c070;border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--amber);margin-bottom:16px">
+      <strong>🔒 Royaume-Uni (Édimbourg, Londres, Bristol)</strong> — Non éligible Erasmus+ en 2026. Le Royaume-Uni réintègre le programme au 1er janvier 2027 (accord UE-Londres du 17 déc. 2025). À planifier pour 2027 !
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-prev" onclick="goTo(1)">← Dates</button>
+    <div class="bottom-summary" id="bs-2">Aucune destination sélectionnée</div>
+    <button class="btn btn-next" onclick="goTo(3)">Vol →</button>
+  </div>
+</div>
+
+<!-- ───────────────── PAGE 3 : VOL ───────────────── -->
+<div class="page" id="page-3">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div><div class="nav-logo-text">Erasmus+ Configurateur</div></div>
+    </div>
+    <div class="nav-steps" id="nav-steps-3"></div>
+  </nav>
+  <div class="step-header">
+    <div class="step-num">Étape 3 sur 7</div>
+    <div class="step-title">Choisissez votre vol</div>
+    <div class="step-desc" id="vol-step-desc">Prix indicatifs A/R depuis Bordeaux-Mérignac.</div>
+  </div>
+  <div class="step-body">
+    <div class="options-grid" id="vol-grid"></div>
+    <div style="background:var(--blue-light);border:1px solid #b5d4f4;border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--blue)">
+      <strong>Subvention voyage Erasmus+ :</strong> La subvention couvre un forfait de <strong>309 €</strong> (vol standard) ou <strong>417 €</strong> (transport écoresponsable) quelle que soit la destination — le coût réel du billet est à votre charge, la subvention vient en déduction.
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-prev" onclick="goTo(2)">← Destination</button>
+    <div class="bottom-summary" id="bs-3">—</div>
+    <button class="btn btn-next" onclick="goTo(4)">Cours →</button>
+  </div>
+</div>
+
+<!-- ───────────────── PAGE 4 : COURS ───────────────── -->
+<div class="page" id="page-4">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div><div class="nav-logo-text">Erasmus+ Configurateur</div></div>
+    </div>
+    <div class="nav-steps" id="nav-steps-4"></div>
+  </nav>
+  <div class="step-header">
+    <div class="step-num">Étape 4 sur 7</div>
+    <div class="step-title">Type de cours</div>
+    <div class="step-desc" id="cours-step-desc">Cours proposés par l'organisme de la destination choisie.</div>
+  </div>
+  <div class="step-body">
+    <div class="options-grid" id="cours-grid"></div>
+    <div style="background:var(--green-light);border:1px solid #a5d6b8;border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--green-dark)">
+      <strong>Note :</strong> Le coût des cours est couvert par la subvention Erasmus+ (indemnité de séjour + forfait organisation). L'objectif est que votre coût total ne dépasse pas la subvention totale calculée.
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-prev" onclick="goTo(3)">← Vol</button>
+    <div class="bottom-summary" id="bs-4">—</div>
+    <button class="btn btn-next" onclick="goTo(5)">Hébergement →</button>
+  </div>
+</div>
+
+<!-- ───────────────── PAGE 5 : HÉBERGEMENT ───────────────── -->
+<div class="page" id="page-5">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div><div class="nav-logo-text">Erasmus+ Configurateur</div></div>
+    </div>
+    <div class="nav-steps" id="nav-steps-5"></div>
+  </nav>
+  <div class="step-header">
+    <div class="step-num">Étape 5 sur 7</div>
+    <div class="step-title">Hébergement</div>
+    <div class="step-desc" id="heb-step-desc">Prix estimés par nuit pour la destination choisie. Lit double minimum.</div>
+  </div>
+  <div class="step-body">
+    <div class="options-grid" id="heb-grid"></div>
+    <div style="background:var(--gray-light);border:1px solid var(--gray-border);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--text-muted);margin-bottom:12px">
+      <strong>💡 Famille hôtesse :</strong> option la plus économique et la plus immersive. Le repas du soir est inclus, ce qui réduit aussi votre budget repas/loisirs. Recommandée pour maximiser la subvention.
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-prev" onclick="goTo(4)">← Cours</button>
+    <div class="bottom-summary" id="bs-5">—</div>
+    <button class="btn btn-next" onclick="goTo(6)">Repas & options →</button>
+  </div>
+</div>
+
+<!-- ───────────────── PAGE 6 : REPAS & OPTIONS ───────────────── -->
+<div class="page" id="page-6">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div><div class="nav-logo-text">Erasmus+ Configurateur</div></div>
+    </div>
+    <div class="nav-steps" id="nav-steps-6"></div>
+  </nav>
+  <div class="step-header">
+    <div class="step-num">Étape 6 sur 7</div>
+    <div class="step-title">Budget quotidien & options</div>
+    <div class="step-desc">Ajustez votre budget repas/loisirs sur place et activez les options souhaitées.</div>
+  </div>
+  <div class="step-body">
+    <div class="slider-wrap">
+      <div class="slider-header">
+        <div class="slider-label">Budget repas & loisirs / jour</div>
+        <div><span class="slider-val" id="lbl-repas">35</span> <span class="slider-unit">€ / jour</span></div>
+      </div>
+      <input type="range" id="sl-repas" min="25" max="110" step="5" value="35" oninput="onSliderChange()">
+      <div class="slider-hint" id="repas-hint">—</div>
+    </div>
+
+    <div class="toggle-list">
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="tl">Assurance voyage</div><div class="ts">Annulation + assistance médicale · +60 €</div></div>
+        <label class="tog"><input type="checkbox" id="ck-ass" onchange="onSliderChange()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="tl">Transfert aéroport A/R</div><div class="ts" id="trf-hint">Navette aller-retour</div></div>
+        <label class="tog"><input type="checkbox" id="ck-trf" onchange="onSliderChange()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="tl">Activités culturelles</div><div class="ts">Visites et sorties organisées par l'école · +120 €</div></div>
+        <label class="tog"><input type="checkbox" id="ck-act" onchange="onSliderChange()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-prev" onclick="goTo(5)">← Hébergement</button>
+    <div class="bottom-summary" id="bs-6">—</div>
+    <button class="btn btn-next" onclick="goTo(7)">Récapitulatif →</button>
+  </div>
+</div>
+
+<!-- ───────────────── PAGE 7 : RÉCAPITULATIF ───────────────── -->
+<div class="page" id="page-7">
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div><div class="nav-logo-text">Erasmus+ Configurateur</div></div>
+    </div>
+    <div class="nav-steps" id="nav-steps-7"></div>
+  </nav>
+  <div class="step-header">
+    <div class="step-num">Étape 7 sur 7</div>
+    <div class="step-title">Récapitulatif de votre configuration</div>
+    <div class="step-desc" id="recap-dest-label">—</div>
+  </div>
+  <div class="step-body">
+    <div class="recap-layout">
+      <div>
+        <div class="recap-lines">
+          <div class="recap-line"><span class="recap-line-label">📅 Dates du séjour</span><span class="recap-line-val" id="r-dates">—</span></div>
+          <div class="recap-line"><span class="recap-line-label">✈ Vol A/R</span><span class="recap-line-val" id="r-vol">—</span></div>
+          <div class="recap-line"><span class="recap-line-label">📚 Cours de langue</span><span class="recap-line-val" id="r-cours">—</span></div>
+          <div class="recap-line"><span class="recap-line-label">🏠 Hébergement</span><span class="recap-line-val" id="r-heb">—</span></div>
+          <div class="recap-line"><span class="recap-line-label">🍽 Repas & loisirs</span><span class="recap-line-val" id="r-repas">—</span></div>
+          <div class="recap-line"><span class="recap-line-label">⚙ Options</span><span class="recap-line-val" id="r-opts">—</span></div>
+          <div class="recap-line total"><span class="recap-line-label">💶 Coût total réel</span><span class="recap-line-val" id="r-total">—</span></div>
+        </div>
+
+        <div style="margin-top:16px;background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:16px 20px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">Informations pratiques</div>
+          <div id="recap-infos" style="font-size:12px;color:var(--text-muted);line-height:1.7"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-card">
+          <div class="sidebar-title">Subvention KA121-EFP 2025</div>
+          <div class="erasmus-rows">
+            <div class="e-row"><span>Voyage (forfait)</span><span class="e-green" id="e-voyage">—</span></div>
+            <div class="e-row"><span>Séjour (<span id="e-nj">9</span>j × <span id="e-taux">133</span> €)</span><span class="e-green" id="e-sejour">—</span></div>
+            <div class="e-row"><span>Organisation</span><span class="e-green">100 €</span></div>
+            <div class="e-row bold"><span>Total subvention</span><span class="e-green" id="e-total">—</span></div>
+            <div class="e-row bold"><span>Reste à charge</span><span id="e-reste">—</span></div>
+          </div>
+
+          <div class="budget-bar-wrap">
+            <div class="budget-bar-labels"><span>0 €</span><span id="bar-mid">—</span><span>2 500 €</span></div>
+            <div class="budget-bar-bg"><div class="budget-bar-fill" id="bar-fill" style="width:0%"></div></div>
+          </div>
+
+          <div class="verdict-badge verdict-ok" id="verdict">
+            <span class="verdict-icon">✅</span>
+            <span id="verdict-text">Dans le budget</span>
+          </div>
+
+          <div class="conseil-box" id="conseil-box">—</div>
+
+          <div style="font-size:11px;color:var(--text-muted);text-align:center;border-top:1px solid var(--gray-border);padding-top:12px;line-height:1.5">
+            Versement : <strong>80 %</strong> avant départ<br><strong>20 %</strong> au retour<br>après remise des justificatifs
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn btn-prev" onclick="goTo(6)">← Repas & options</button>
+    <div class="bottom-summary" id="bs-7">—</div>
+    <button class="btn btn-next" onclick="restart()">↺ Recommencer</button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ──────────────────────────────────────────
+// DATA — destinations par défaut (fallback)
+// ──────────────────────────────────────────
+var DEST = {
+  malte: {
+    nom:'Malte — St. Julians', flag:'🇲🇹', org:'Maltalingua / ESE', grp:'Groupe 2',
+    sejour:133, trf:40, compagnie:'Volotea / Vueling', duree:'2h30', direct:true,
+    vol: {eco:{prix:130,label:'Cabine seul'},soute:{prix:165,label:'+ Soute 20kg'},flex:{prix:210,label:'Flexible/annulable'}},
+    cours: {standard:{prix:160,label:'Standard 20 leçons/sem.',sub:'~4h/jour · tous niveaux'},intensif:{prix:225,label:'Intensif 30 leçons/sem.',sub:'~6h/jour · progression rapide'},teacher:{prix:260,label:'Formation enseignants CPD',sub:'Programme Erasmus+ dédié profs'}},
+    heb: {famille:{prix:38,label:'Famille hôtesse',sub:'Demi-pension · repas du soir inclus'},airbnb:{prix:65,label:'Airbnb lit double',sub:'Appartement entier'},bb:{prix:75,label:'Bed & Breakfast',sub:'Petit déjeuner inclus'},hotel:{prix:110,label:'Hôtel 3★',sub:'Demi-pension possible'}},
+    repas:{min:25,max:60,def:35,ref:'Fourchette Malte : 25–60 €/jour (Numbeo 2025)'},
+    infos:'Vol direct depuis Bordeaux-Mérignac avec Volotea/Vueling. Temps de vol ~2h30. Monnaie : Euro. Météo octobre : 22–24°C ensoleillé. Maltalingua : OID Erasmus+ E10039312, certifié EAQUALS.'
+  },
+  cork: {
+    nom:'Cork — Irlande', flag:'🇮🇪', org:'Cork English College', grp:'Groupe 1',
+    sejour:150, trf:30, compagnie:'Aer Lingus', duree:'2h00', direct:true,
+    vol: {eco:{prix:180,label:'Cabine seul'},soute:{prix:225,label:'+ Soute 20kg'},flex:{prix:290,label:'Flexible/annulable'}},
+    cours: {standard:{prix:500,label:'Standard 20 leçons/sem.',sub:'~4h/jour · tous niveaux'},intensif:{prix:700,label:'Intensif 30 leçons/sem.',sub:'~6h/jour · progression rapide'},teacher:{prix:800,label:'Formation enseignants CPD',sub:'Programme Erasmus+ dédié profs'}},
+    heb: {famille:{prix:42,label:'Famille hôtesse',sub:'Demi-pension · repas du soir inclus'},airbnb:{prix:75,label:'Airbnb lit double',sub:'Appartement entier'},bb:{prix:90,label:'Bed & Breakfast',sub:'Petit déjeuner inclus'},hotel:{prix:130,label:'Hôtel 3★',sub:'Demi-pension possible'}},
+    repas:{min:35,max:90,def:55,ref:'Fourchette Cork : 35–90 €/jour (Routard 2025)'},
+    infos:'Vol direct Bordeaux→Cork avec Aer Lingus. Monnaie : Euro. Météo octobre : 9–13°C. Cork English College spécialisé Erasmus+ enseignants. Ville à taille humaine, moins chère que Dublin.'
+  },
+  dublin: {
+    nom:'Dublin — Irlande', flag:'🇮🇪', org:'CES Dublin / Nacel', grp:'Groupe 1',
+    sejour:150, trf:30, compagnie:'Ryanair / Aer Lingus', duree:'2h00', direct:true,
+    vol: {eco:{prix:230,label:'Cabine seul'},soute:{prix:275,label:'+ Soute 20kg'},flex:{prix:370,label:'Flexible/annulable'}},
+    cours: {standard:{prix:579,label:'Standard 20 leçons/sem.',sub:'~4h/jour · tous niveaux'},intensif:{prix:810,label:'Intensif 30 leçons/sem.',sub:'~6h/jour · progression rapide'},teacher:{prix:925,label:'Formation enseignants CPD',sub:'Programme Erasmus+ dédié profs'}},
+    heb: {famille:{prix:50,label:'Famille hôtesse',sub:'Demi-pension · repas du soir inclus'},airbnb:{prix:90,label:'Airbnb lit double',sub:'Appartement entier'},bb:{prix:110,label:'Bed & Breakfast',sub:'Petit déjeuner inclus'},hotel:{prix:160,label:'Hôtel 3★',sub:'Demi-pension possible'}},
+    repas:{min:45,max:110,def:70,ref:'Fourchette Dublin : 45–110 €/jour (Routard 2025)'},
+    infos:'Vol direct Bordeaux→Dublin. Monnaie : Euro. Météo octobre : 10–14°C pluvieux. CES Dublin en centre-ville. Ville la plus chère — prévoir budget plus large.'
+  },
+  galway: {
+    nom:'Galway — Irlande', flag:'🇮🇪', org:'Galway Cultural Institute', grp:'Groupe 1',
+    sejour:150, trf:35, compagnie:'Via Dublin + bus 2h', duree:'4h30', direct:false,
+    vol: {eco:{prix:250,label:'Via Dublin + bus'},soute:{prix:295,label:'+ Soute 20kg'},flex:{prix:400,label:'Flexible/annulable'}},
+    cours: {standard:{prix:480,label:'Standard 20 leçons/sem.',sub:'~4h/jour · tous niveaux'},intensif:{prix:670,label:'Intensif 30 leçons/sem.',sub:'~6h/jour · progression rapide'},teacher:{prix:770,label:'Formation enseignants CPD',sub:'Programme Erasmus+ dédié profs'}},
+    heb: {famille:{prix:40,label:'Famille hôtesse',sub:'Demi-pension · repas du soir inclus'},airbnb:{prix:70,label:'Airbnb lit double',sub:'Appartement entier'},bb:{prix:85,label:'Bed & Breakfast',sub:'Petit déjeuner inclus'},hotel:{prix:120,label:'Hôtel 3★',sub:'Demi-pension possible'}},
+    repas:{min:35,max:85,def:50,ref:'Fourchette Galway : 35–85 €/jour'},
+    infos:'Galway : vol vers Dublin puis bus 2h30. Galway Cultural Institute, ambiance irlandaise authentique. Moins touristique que Dublin. Même subvention groupe 1 que Dublin et Cork.'
+  },
+  chypre: {
+    nom:'Chypre — Limassol', flag:'🇨🇾', org:'The English School', grp:'Groupe 2',
+    sejour:133, trf:40, compagnie:'Via escale (Paris/Rome)', duree:'4h+', direct:false,
+    vol: {eco:{prix:180,label:'Via escale'},soute:{prix:220,label:'+ Soute 20kg'},flex:{prix:290,label:'Flexible/annulable'}},
+    cours: {standard:{prix:420,label:'Standard 20 leçons/sem.',sub:'~4h/jour · tous niveaux'},intensif:{prix:590,label:'Intensif 30 leçons/sem.',sub:'~6h/jour · progression rapide'},teacher:{prix:680,label:'Formation enseignants CPD',sub:'Programme Erasmus+ dédié profs'}},
+    heb: {famille:{prix:35,label:'Famille hôtesse',sub:'Demi-pension · repas du soir inclus'},airbnb:{prix:60,label:'Airbnb lit double',sub:'Appartement entier'},bb:{prix:75,label:'Bed & Breakfast',sub:'Petit déjeuner inclus'},hotel:{prix:105,label:'Hôtel 3★',sub:'Demi-pension possible'}},
+    repas:{min:25,max:65,def:40,ref:'Fourchette Chypre : 25–65 €/jour'},
+    infos:'Chypre : anglais co-officiel. Vol avec escale depuis Bordeaux. Météo octobre : 24–26°C ensoleillé. Groupe 2 comme Malte — budget favorable. The English School certifié Erasmus+.'
+  }
+};
+
+// ──────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────
+var SEL = {
+  dateDepart:'2026-10-18', dateRetour:'2026-10-25', nuits:7,
+  dest:'malte', vol:'eco', cours:'standard', heb:'airbnb',
+  repas:35, ass:false, trf:false, act:false
+};
+var currentPage = 0;
+var dataUpdated = false;
+var updateDate = null;
+var TOTAL_STEPS = 7;
+
+// ──────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────
+function goTo(n){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('page-'+n).classList.add('active');
+  currentPage = n;
+  if(n>0) renderNavSteps(n);
+  if(n===1) renderDates();
+  if(n===2) renderDestGrid();
+  if(n===3) renderVolGrid();
+  if(n===4) renderCoursGrid();
+  if(n===5) renderHebGrid();
+  if(n===6) renderSliders();
+  if(n===7) renderRecap();
+  window.scrollTo(0,0);
+}
+
+function restart(){goTo(0);}
+
+function renderNavSteps(current){
+  var html='';
+  for(var i=1;i<=TOTAL_STEPS;i++){
+    var cls=i<current?'done':i===current?'active':'';
+    html+='<div class="nav-step '+cls+'" onclick="goTo('+i+')">'+i+'</div>';
+    if(i<TOTAL_STEPS) html+='<div class="nav-step-line '+(i<current?'done':'')+'"></div>';
+  }
+  var el=document.getElementById('nav-steps-'+current);
+  if(el) el.innerHTML=html;
+}
+
+// ──────────────────────────────────────────
+// DATES
+// ──────────────────────────────────────────
+var JOURS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+var MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+function formatDate(str){
+  var d = new Date(str+'T12:00:00');
+  return JOURS[d.getDay()]+' '+d.getDate()+' '+MOIS[d.getMonth()]+' '+d.getFullYear();
+}
+
+function addDays(str, n){
+  var d = new Date(str+'T12:00:00');
+  d.setDate(d.getDate()+n);
+  return d.getFullYear()+'-'+(d.getMonth()<9?'0':'')+(d.getMonth()+1)+'-'+(d.getDate()<10?'0':'')+d.getDate();
+}
+
+function diffDays(d1, d2){
+  return Math.round((new Date(d2+'T12:00:00') - new Date(d1+'T12:00:00'))/(1000*60*60*24));
+}
+
+function shortDate(str){
+  var d=new Date(str+'T12:00:00');
+  return JOURS[d.getDay()].slice(0,3)+'. '+d.getDate()+' '+MOIS[d.getMonth()].slice(0,3)+'.';
+}
+
+function renderDates(){
+  var dep = document.getElementById('date-depart').value || SEL.dateDepart;
+  var ret = document.getElementById('date-retour').value || SEL.dateRetour;
+  SEL.dateDepart = dep;
+  SEL.dateRetour = ret;
+  document.getElementById('depart-day-label').textContent = formatDate(dep);
+  document.getElementById('retour-day-label').textContent = formatDate(ret);
+  var nuits = diffDays(dep, ret);
+  if(nuits<1) nuits=1;
+  SEL.nuits = nuits;
+  var premierCours = addDays(dep,1);
+  var dernierCours = addDays(ret,-2);
+  var joursErasmus = nuits + 2;
+  document.getElementById('dr-duree').textContent = nuits+' nuit'+(nuits>1?'s':'');
+  document.getElementById('dr-duree-sub').textContent = (nuits+1)+' jours';
+  document.getElementById('dr-premier-cours').textContent = shortDate(premierCours);
+  document.getElementById('dr-dernier-cours').textContent = shortDate(dernierCours);
+  var joursC = diffDays(premierCours, dernierCours)+1;
+  document.getElementById('dr-jours-cours').textContent = joursC+' jour'+(joursC>1?'s':'')+' de cours';
+  document.getElementById('dr-erasmus-jours').textContent = joursErasmus+' jours';
+  var warn='';
+  var depD = new Date(dep+'T12:00:00');
+  var retD = new Date(ret+'T12:00:00');
+  if(depD.getDay()!==0) warn += '⚠ Départ : idéalement un dimanche pour commencer les cours le lundi. ';
+  if(retD.getDay()!==0) warn += '⚠ Retour : idéalement un dimanche après la dernière journée de cours. ';
+  if(nuits<5) warn += '⚠ Durée minimale recommandée : 7 nuits pour un perfectionnement efficace. ';
+  var warnEl = document.getElementById('date-warning');
+  if(warn){warnEl.style.display='block';warnEl.textContent=warn;}
+  else warnEl.style.display='none';
+  document.getElementById('bs-1').innerHTML='<strong>'+shortDate(dep)+'</strong> → <strong>'+shortDate(ret)+'</strong> · '+nuits+' nuits';
+}
+
+function onDateChange(){
+  SEL.dateDepart = document.getElementById('date-depart').value;
+  SEL.dateRetour = document.getElementById('date-retour').value;
+  renderDates();
+}
+
+// ──────────────────────────────────────────
+// RENDER GRIDS
+// ──────────────────────────────────────────
+function renderDestGrid(){
+  var html='';
+  Object.keys(DEST).forEach(function(k){
+    var d=DEST[k];
+    var sel=SEL.dest===k?'sel':'';
+    var tagCls=d.grp==='Groupe 1'?'tag-g1':'tag-g2';
+    var directLabel=d.direct?'Vol direct':'Via escale';
+    html+='<div class="opt-card '+sel+'" onclick="selectDest(\''+k+'\')">'+
+      '<div class="opt-check">✓</div>'+
+      '<div class="opt-card-top"><div class="opt-name">'+d.flag+' '+d.nom+'</div><span class="opt-tag '+tagCls+'">'+d.grp+'</span></div>'+
+      '<div class="opt-sub">'+d.org+' · '+directLabel+' '+d.compagnie+'</div>'+
+      '<div class="opt-price">'+d.vol.eco.prix+' €</div>'+
+      '<div class="opt-price-note">vol économique A/R depuis Bordeaux</div>'+
+      '<div class="opt-erasmus">Séjour Erasmus+ : '+d.sejour+' €/jour</div>'+
+    '</div>';
+  });
+  document.getElementById('dest-grid').innerHTML=html;
+  document.getElementById('bs-2').innerHTML='<strong>'+DEST[SEL.dest].flag+' '+DEST[SEL.dest].nom+'</strong>';
+}
+
+function selectDest(k){
+  SEL.dest=k;
+  var d=DEST[k];
+  SEL.repas=d.repas.def;
+  renderDestGrid();
+}
+
+function renderVolGrid(){
+  var d=DEST[SEL.dest];
+  document.getElementById('vol-step-desc').textContent='Prix A/R depuis Bordeaux vers '+d.nom+' ('+d.compagnie+') · '+shortDate(SEL.dateDepart)+' → '+shortDate(SEL.dateRetour);
+  var html='';
+  Object.keys(d.vol).forEach(function(k){
+    var v=d.vol[k];
+    var sel=SEL.vol===k?'sel':'';
+    var remb=309;
+    var reste=v.prix-remb;
+    var resteLabel=reste<=0?'<span style="color:var(--green)">Couvert par Erasmus+</span>':'<span style="color:var(--amber)">Reste réel : '+reste+' €</span>';
+    html+='<div class="opt-card '+sel+'" onclick="selectVol(\''+k+'\')">'+
+      '<div class="opt-check">✓</div>'+
+      '<div class="opt-card-top"><div class="opt-name">'+v.label+'</div></div>'+
+      '<div class="opt-sub">'+d.compagnie+' · '+d.duree+' de vol</div>'+
+      '<div class="opt-price">'+v.prix+' €</div>'+
+      '<div class="opt-price-note">aller-retour estimé</div>'+
+      '<div class="opt-erasmus">Forfait Erasmus+ : '+remb+' € · '+resteLabel+'</div>'+
+    '</div>';
+  });
+  document.getElementById('vol-grid').innerHTML=html;
+  document.getElementById('bs-3').innerHTML='<strong>'+d.flag+' '+d.nom+'</strong> · vol '+d.vol[SEL.vol].prix+' €';
+}
+
+function selectVol(k){SEL.vol=k;renderVolGrid();}
+
+function renderCoursGrid(){
+  var d=DEST[SEL.dest];
+  document.getElementById('cours-step-desc').textContent='Programmes proposés par '+d.org;
+  var html='';
+  Object.keys(d.cours).forEach(function(k){
+    var c=d.cours[k];
+    var sel=SEL.cours===k?'sel':'';
+    html+='<div class="opt-card '+sel+'" onclick="selectCours(\''+k+'\')">'+
+      '<div class="opt-check">✓</div>'+
+      '<div class="opt-card-top"><div class="opt-name">'+c.label+'</div></div>'+
+      '<div class="opt-sub">'+c.sub+'</div>'+
+      '<div class="opt-price">'+c.prix+' €</div>'+
+      '<div class="opt-price-note">pour la semaine complète</div>'+
+      '<div class="opt-erasmus">Couvert dans la subvention globale</div>'+
+    '</div>';
+  });
+  document.getElementById('cours-grid').innerHTML=html;
+  document.getElementById('bs-4').innerHTML='<strong>'+d.flag+' '+d.nom+'</strong> · '+d.cours[SEL.cours].label;
+}
+
+function selectCours(k){SEL.cours=k;renderCoursGrid();}
+
+function renderHebGrid(){
+  var d=DEST[SEL.dest];
+  var nuits=SEL.nuits;
+  document.getElementById('heb-step-desc').textContent='Prix estimés à '+d.nom+' · calcul pour '+nuits+' nuits';
+  var html='';
+  Object.keys(d.heb).forEach(function(k){
+    var h=d.heb[k];
+    var sel=SEL.heb===k?'sel':'';
+    var total=h.prix*nuits;
+    html+='<div class="opt-card '+sel+'" onclick="selectHeb(\''+k+'\')">'+
+      '<div class="opt-check">✓</div>'+
+      '<div class="opt-card-top"><div class="opt-name">'+h.label+'</div></div>'+
+      '<div class="opt-sub">'+h.sub+'</div>'+
+      '<div class="opt-price">'+h.prix+' €<span style="font-size:13px;font-weight:400;color:var(--text-muted)">/nuit</span></div>'+
+      '<div class="opt-price-note">soit '+total+' € pour '+nuits+' nuits</div>'+
+      '<div class="opt-erasmus">Inclus dans le calcul du budget total</div>'+
+    '</div>';
+  });
+  document.getElementById('heb-grid').innerHTML=html;
+  document.getElementById('bs-5').innerHTML='<strong>'+d.flag+' '+d.nom+'</strong> · '+d.heb[SEL.heb].label+' '+d.heb[SEL.heb].prix+'€/nuit';
+}
+
+function selectHeb(k){SEL.heb=k;renderHebGrid();}
+
+function renderSliders(){
+  var d=DEST[SEL.dest];
+  var sl=document.getElementById('sl-repas');
+  sl.min=d.repas.min; sl.max=d.repas.max;
+  if(SEL.repas<d.repas.min||SEL.repas>d.repas.max) SEL.repas=d.repas.def;
+  sl.value=SEL.repas;
+  document.getElementById('lbl-repas').textContent=SEL.repas;
+  document.getElementById('repas-hint').textContent=d.repas.ref;
+  document.getElementById('trf-hint').textContent='Navette A/R · +'+d.trf+' €';
+  document.getElementById('ck-ass').checked=SEL.ass;
+  document.getElementById('ck-trf').checked=SEL.trf;
+  document.getElementById('ck-act').checked=SEL.act;
+  updateBS6();
+}
+
+function onSliderChange(){
+  SEL.repas=parseInt(document.getElementById('sl-repas').value);
+  SEL.ass=document.getElementById('ck-ass').checked;
+  SEL.trf=document.getElementById('ck-trf').checked;
+  SEL.act=document.getElementById('ck-act').checked;
+  document.getElementById('lbl-repas').textContent=SEL.repas;
+  updateBS6();
+}
+
+function updateBS6(){
+  var t=calcTotal();
+  document.getElementById('bs-6').innerHTML='Repas '+SEL.repas+'€/j · <strong>~'+t+' €</strong> total estimé';
+}
+
+// ──────────────────────────────────────────
+// CALCULS
+// ──────────────────────────────────────────
+function calcTotal(){
+  var d=DEST[SEL.dest];
+  var vol=d.vol[SEL.vol].prix;
+  var cours=d.cours[SEL.cours].prix;
+  var heb=d.heb[SEL.heb].prix*SEL.nuits;
+  var repas=SEL.repas*SEL.nuits;
+  var opts=0;
+  if(SEL.ass)opts+=60;
+  if(SEL.trf)opts+=d.trf;
+  if(SEL.act)opts+=120;
+  return vol+cours+heb+repas+opts;
+}
+
+function calcErasmus(){
+  var d=DEST[SEL.dest];
+  var nj=SEL.nuits+2;
+  return {voyage:309, sejour:Math.round(d.sejour*nj), orga:100, total:309+Math.round(d.sejour*nj)+100, nj:nj};
+}
+
+// ──────────────────────────────────────────
+// RÉCAPITULATIF
+// ──────────────────────────────────────────
+function renderRecap(){
+  var d=DEST[SEL.dest];
+  var vol=d.vol[SEL.vol].prix;
+  var cours=d.cours[SEL.cours].prix;
+  var heb=d.heb[SEL.heb].prix*SEL.nuits;
+  var repas=SEL.repas*SEL.nuits;
+  var opts=0;
+  if(SEL.ass)opts+=60;
+  if(SEL.trf)opts+=d.trf;
+  if(SEL.act)opts+=120;
+  var total=vol+cours+heb+repas+opts;
+  var e=calcErasmus();
+  var reste=total-e.total;
+
+  document.getElementById('recap-dest-label').textContent=d.flag+' '+d.nom+' · '+d.org+' · '+d.grp+' · '+SEL.nuits+' nuits';
+  document.getElementById('r-dates').textContent=formatDate(SEL.dateDepart)+' → '+formatDate(SEL.dateRetour)+' ('+SEL.nuits+' nuits)';
+  document.getElementById('r-vol').textContent=vol+' €  ('+d.vol[SEL.vol].label+')';
+  document.getElementById('r-cours').textContent=cours+' €  ('+d.cours[SEL.cours].label+')';
+  document.getElementById('r-heb').textContent=heb+' €  ('+d.heb[SEL.heb].label+' · '+d.heb[SEL.heb].prix+'€/nuit × '+SEL.nuits+')';
+  document.getElementById('r-repas').textContent=repas+' €  ('+SEL.repas+'€/j × '+SEL.nuits+' jours)';
+  var optsLabel=[];
+  if(SEL.ass)optsLabel.push('Assurance');
+  if(SEL.trf)optsLabel.push('Transfert');
+  if(SEL.act)optsLabel.push('Activités');
+  document.getElementById('r-opts').textContent=opts>0?opts+' €  ('+optsLabel.join(', ')+')':'—';
+  document.getElementById('r-total').textContent=total+' €';
+
+  document.getElementById('e-voyage').textContent=e.voyage+' €';
+  document.getElementById('e-nj').textContent=e.nj;
+  document.getElementById('e-taux').textContent=d.sejour;
+  document.getElementById('e-sejour').textContent=e.sejour+' €';
+  document.getElementById('e-total').textContent=e.total+' €';
+  document.getElementById('bar-mid').textContent='Erasmus+ '+e.total+' €';
+
+  var resteEl=document.getElementById('e-reste');
+  if(reste<=0){resteEl.textContent='0 € ✓';resteEl.className='e-green';}
+  else{resteEl.textContent='+'+reste+' €';resteEl.className='e-red';}
+
+  var pct=Math.min(Math.round(total/2500*100),100);
+  var bar=document.getElementById('bar-fill');
+  bar.style.width=pct+'%';
+  bar.style.background=total<=e.total?'#1a6b47':'#a32d2d';
+
+  var vEl=document.getElementById('verdict');
+  var vTxt=document.getElementById('verdict-text');
+  if(reste<=-200){vEl.className='verdict-badge verdict-ok';vTxt.textContent='✅ Excédent confortable — marge de '+(e.total-total)+' €';}
+  else if(reste<=0){vEl.className='verdict-badge verdict-ok';vTxt.textContent='✅ Couvert intégralement par Erasmus+';}
+  else if(reste<=250){vEl.className='verdict-badge verdict-warn';vTxt.textContent='⚠ Légèrement au-dessus — reste à charge : '+reste+' €';}
+  else{vEl.className='verdict-badge verdict-over';vTxt.textContent='❌ Dépassement de '+reste+' € — ajustez votre configuration';}
+
+  var conseil='';
+  if(SEL.heb==='hotel'&&reste>0)conseil='💡 Passer en Airbnb économiserait '+((d.heb.hotel.prix-d.heb.airbnb.prix)*SEL.nuits)+' € sur l\'hébergement.';
+  else if(SEL.dest==='dublin'&&reste>150)conseil='💡 Cork ou Galway offrent la même subvention Erasmus+ (groupe 1) mais avec des coûts moins élevés.';
+  else if((SEL.dest==='malte'||SEL.dest==='chypre')&&reste<=0)conseil='✅ Excellente configuration ! Malte/Chypre ont le meilleur rapport coût/subvention (groupe 2).';
+  else if(reste<=0)conseil='✅ Configuration optimale. Vous pouvez transmettre ce dossier à la DRAREIC.';
+  else conseil='💡 Choisir la famille hôtesse (repas du soir inclus) peut réduire significativement le reste à charge.';
+  document.getElementById('conseil-box').textContent=conseil;
+
+  document.getElementById('recap-infos').innerHTML=d.infos+'<br><br><strong>Versement :</strong> 80 % de la subvention versés avant le départ, 20 % au retour après remise des justificatifs.<br><strong>Documents requis :</strong> Contrat de mobilité (Learning Agreement), contrat financier, attestation d\'arrivée, rapport final.';
+  document.getElementById('bs-7').innerHTML='Total : <strong>'+total+' €</strong> · Subvention : <strong>'+e.total+' €</strong>';
+}
+
+// ──────────────────────────────────────────
+// MISE À JOUR VIA API CLAUDE
+// ──────────────────────────────────────────
+async function fetchUpdate(){
+  var overlay=document.getElementById('update-overlay');
+  var loaderStatus=document.getElementById('loader-status');
+  var banner=document.getElementById('update-banner');
+  var bannerText=document.getElementById('update-banner-text');
+  var dot=document.getElementById('status-dot');
+  var statusText=document.getElementById('status-text');
+
+  dot.className='status-dot loading';
+  statusText.textContent='Actualisation…';
+  loaderStatus.textContent='Interrogation de l\'IA pour les prix et destinations 2025–2026…';
+
+  var prompt = `Tu es un expert Erasmus+ et des séjours linguistiques pour enseignants.
+Fournis les données actualisées pour un configurateur de séjour Erasmus+ au départ de Bordeaux (octobre 2026).
+Réponds UNIQUEMENT en JSON valide, sans balises markdown, sans texte avant ou après.
+Format exact :
+{
+  "destinations": {
+    "malte": {"vol_eco":130,"vol_soute":165,"vol_flex":210,"cours_standard":160,"cours_intensif":225,"cours_teacher":260,"heb_famille":38,"heb_airbnb":65,"heb_bb":75,"heb_hotel":110,"repas_min":25,"repas_max":60,"repas_def":35,"sejour_erasmus":133,"trf":40},
+    "cork":  {"vol_eco":180,"vol_soute":225,"vol_flex":290,"cours_standard":500,"cours_intensif":700,"cours_teacher":800,"heb_famille":42,"heb_airbnb":75,"heb_bb":90,"heb_hotel":130,"repas_min":35,"repas_max":90,"repas_def":55,"sejour_erasmus":150,"trf":30},
+    "dublin":{"vol_eco":230,"vol_soute":275,"vol_flex":370,"cours_standard":579,"cours_intensif":810,"cours_teacher":925,"heb_famille":50,"heb_airbnb":90,"heb_bb":110,"heb_hotel":160,"repas_min":45,"repas_max":110,"repas_def":70,"sejour_erasmus":150,"trf":30},
+    "galway":{"vol_eco":250,"vol_soute":295,"vol_flex":400,"cours_standard":480,"cours_intensif":670,"cours_teacher":770,"heb_famille":40,"heb_airbnb":70,"heb_bb":85,"heb_hotel":120,"repas_min":35,"repas_max":85,"repas_def":50,"sejour_erasmus":150,"trf":35},
+    "chypre":{"vol_eco":180,"vol_soute":220,"vol_flex":290,"cours_standard":420,"cours_intensif":590,"cours_teacher":680,"heb_famille":35,"heb_airbnb":60,"heb_bb":75,"heb_hotel":105,"repas_min":25,"repas_max":65,"repas_def":40,"sejour_erasmus":133,"trf":40}
+  },
+  "updated_at": "2025-10"
+}
+Mets à jour les prix selon les données de marché actuelles (vols Bordeaux, cours de langue Erasmus+, hébergement). Si une nouvelle destination anglophone accessible depuis Bordeaux et éligible Erasmus+ est disponible en octobre 2026, ajoute-la avec la même structure.`;
+
+  try {
+    var res = await fetch('/api/claude', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    var data = await res.json();
+    var text = (data.content||[]).map(function(b){return b.text||'';}).join('');
+    var clean = text.replace(/```json|```/g,'').trim();
+    var json = JSON.parse(clean);
+
+    if(json.destinations){
+      Object.keys(json.destinations).forEach(function(k){
+        var u=json.destinations[k];
+        if(DEST[k]){
+          DEST[k].vol.eco.prix=u.vol_eco||DEST[k].vol.eco.prix;
+          DEST[k].vol.soute.prix=u.vol_soute||DEST[k].vol.soute.prix;
+          DEST[k].vol.flex.prix=u.vol_flex||DEST[k].vol.flex.prix;
+          DEST[k].cours.standard.prix=u.cours_standard||DEST[k].cours.standard.prix;
+          DEST[k].cours.intensif.prix=u.cours_intensif||DEST[k].cours.intensif.prix;
+          DEST[k].cours.teacher.prix=u.cours_teacher||DEST[k].cours.teacher.prix;
+          DEST[k].heb.famille.prix=u.heb_famille||DEST[k].heb.famille.prix;
+          DEST[k].heb.airbnb.prix=u.heb_airbnb||DEST[k].heb.airbnb.prix;
+          DEST[k].heb.bb.prix=u.heb_bb||DEST[k].heb.bb.prix;
+          DEST[k].heb.hotel.prix=u.heb_hotel||DEST[k].heb.hotel.prix;
+          DEST[k].repas.min=u.repas_min||DEST[k].repas.min;
+          DEST[k].repas.max=u.repas_max||DEST[k].repas.max;
+          DEST[k].repas.def=u.repas_def||DEST[k].repas.def;
+          DEST[k].sejour=u.sejour_erasmus||DEST[k].sejour;
+          DEST[k].trf=u.trf||DEST[k].trf;
+        }
+      });
+      dataUpdated=true;
+      updateDate=json.updated_at||new Date().toLocaleDateString('fr-FR');
+    }
+
+    overlay.style.display='none';
+    dot.className='status-dot ok';
+    statusText.textContent='Mis à jour · '+(updateDate||'');
+    banner.className='update-banner ok';
+    bannerText.textContent='✅ Données actualisées avec succès · Barème KA121-EFP 2025 · '+(updateDate||new Date().toLocaleDateString('fr-FR'));
+
+  } catch(e){
+    overlay.style.display='none';
+    dot.className='status-dot error';
+    statusText.textContent='Données de référence (hors ligne)';
+    banner.className='update-banner error';
+    bannerText.textContent='⚠ Mise à jour impossible (pas de connexion) — les données de référence intégrées sont utilisées.';
+  }
+}
+
+// ──────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────
+window.addEventListener('load', function(){
+  fetchUpdate();
+  renderDates();
+  renderDestGrid();
+});
+</script>
+</body>
+</html>
